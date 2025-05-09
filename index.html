@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Ekran Kaydedici</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 10px;
+        background-color: #f0f0f0;
+        font-size: 13px;
+      }
+      .container {
+        max-width: 400px;
+        margin: 0 auto;
+        background-color: white;
+        padding: 12px;
+        border-radius: 4px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        margin: 0 0 10px 0;
+        font-size: 16px;
+        color: #333;
+        text-align: center;
+      }
+      .section {
+        margin: 8px 0;
+        padding: 8px;
+        background-color: #f8f9fa;
+        border-radius: 3px;
+        border: 1px solid #ddd;
+      }
+      .section h3 {
+        margin: 0 0 8px 0;
+        font-size: 14px;
+        color: #333;
+        border-bottom: 1px solid #4caf50;
+        padding-bottom: 4px;
+      }
+      .form-group {
+        margin: 6px 0;
+      }
+      .form-group label {
+        display: block;
+        margin-bottom: 2px;
+        color: #555;
+        font-weight: bold;
+        font-size: 12px;
+      }
+      .form-group select,
+      .form-group input {
+        width: 100%;
+        padding: 4px 6px;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        font-size: 12px;
+        box-sizing: border-box;
+      }
+      .output-path {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+      }
+      .output-path input {
+        flex: 1;
+      }
+      .output-path button {
+        white-space: nowrap;
+        padding: 4px 8px;
+      }
+      button {
+        background-color: #4caf50;
+        color: white;
+        padding: 4px 8px;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 12px;
+      }
+      button:hover {
+        background-color: #45a049;
+      }
+      button:disabled {
+        background-color: #cccccc;
+        cursor: not-allowed;
+      }
+      #recordButton {
+        width: 100%;
+        padding: 6px;
+        font-size: 13px;
+        margin-top: 8px;
+      }
+      #status {
+        margin-top: 8px;
+        padding: 6px;
+        border-radius: 3px;
+        font-size: 12px;
+        text-align: center;
+      }
+      .recording {
+        background-color: #ffebee;
+        color: #c62828;
+      }
+      .stopped {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+      }
+      .resolution-presets {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+        margin-top: 6px;
+      }
+      .resolution-preset {
+        padding: 6px;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        cursor: pointer;
+        background-color: white;
+        transition: all 0.2s;
+        font-size: 11px;
+      }
+      .resolution-preset:hover {
+        background-color: #e9ecef;
+      }
+      .resolution-preset.active {
+        background-color: #4caf50;
+        color: white;
+        border-color: #4caf50;
+      }
+      .resolution-preset.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .preset-info {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+      }
+      .preset-name {
+        font-weight: bold;
+      }
+      .preset-resolution {
+        font-family: monospace;
+        color: #666;
+        font-size: 10px;
+      }
+      .resolution-preset.active .preset-resolution {
+        color: rgba(255, 255, 255, 0.8);
+      }
+      .help-text {
+        font-size: 10px;
+        color: #666;
+        margin-top: 2px;
+      }
+      .settings-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+      }
+      .settings-category {
+        background-color: white;
+        padding: 8px;
+        border-radius: 3px;
+        border: 1px solid #eee;
+      }
+      .settings-category h4 {
+        margin: 0 0 6px 0;
+        font-size: 12px;
+        color: #4caf50;
+      }
+      .checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        font-size: 12px;
+        color: #555;
+      }
+      .checkbox-label input[type="checkbox"] {
+        width: auto;
+        margin: 0;
+      }
+      .audio-devices {
+        margin-top: 8px;
+        border-top: 1px solid #eee;
+        padding-top: 8px;
+      }
+      .audio-device-group {
+        margin-bottom: 8px;
+      }
+      .device-control {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 12px;
+        color: #555;
+      }
+      .volume-control {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .volume-btn {
+        width: 12px;
+        height: 12px;
+        padding: 0;
+        font-size: 10px;
+        line-height: 1;
+      }
+      .volume-level {
+        min-width: 45px;
+        text-align: center;
+        font-family: monospace;
+        font-size: 5px;
+      }
+      #systemVolume {
+        font-size: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="section">
+        <select id="screenSelect" style="width: 100%">
+          <option value="">Ekran seçin...</option>
+        </select>
+      </div>
+
+      <div class="section">
+        <div class="output-path">
+          <input
+            type="text"
+            id="outputPath"
+            readonly
+            placeholder="Kayıt konumu seçin..."
+          />
+          <button id="selectPath">Konum</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="settings-grid">
+          <div class="settings-category">
+            <div class="form-group">
+              <label for="fps">FPS</label>
+              <input type="number" id="fps" min="1" max="60" value="30" />
+            </div>
+            <div class="form-group">
+              <label for="crf">Kalite</label>
+              <input type="number" id="crf" min="0" max="51" value="23" />
+            </div>
+            <div class="form-group">
+              <label class="checkbox-label">
+                <input type="checkbox" id="recordSystemAudio" checked />
+                Sistem Sesi
+                <button type="button" class="volume-btn" id="systemVolDown">
+                  -
+                </button>
+                <span id="systemVolume">100%</span>
+                <button type="button" class="volume-btn" id="systemVolUp">
+                  +
+                </button>
+              </label>
+            </div>
+            <div class="form-group">
+              <label class="checkbox-label">
+                <input type="checkbox" id="recordMic" checked />
+                Mikrofon
+                <button type="button" class="volume-btn" id="micVolDown">
+                  -
+                </button>
+                <span id="micVolume">100%</span>
+                <button type="button" class="volume-btn" id="micVolUp">
+                  +
+                </button>
+              </label>
+            </div>
+          </div>
+
+          <div class="settings-category">
+            <div class="resolution-presets" id="resolutionPresets"></div>
+          </div>
+        </div>
+      </div>
+
+      <button id="recordButton" disabled>Kayıt Başlat</button>
+      <div id="status" class="stopped">Kayıt durduruldu</div>
+    </div>
+
+    <script>
+      const { ipcRenderer } = require("electron");
+      const recordButton = document.getElementById("recordButton");
+      const status = document.getElementById("status");
+      const screenSelect = document.getElementById("screenSelect");
+      const outputPathInput = document.getElementById("outputPath");
+      const selectPathButton = document.getElementById("selectPath");
+      const fpsInput = document.getElementById("fps");
+      const crfInput = document.getElementById("crf");
+      const recordSystemAudio = document.getElementById("recordSystemAudio");
+      const recordMic = document.getElementById("recordMic");
+      const systemVolDown = document.getElementById("systemVolDown");
+      const systemVolUp = document.getElementById("systemVolUp");
+      const micVolDown = document.getElementById("micVolDown");
+      const micVolUp = document.getElementById("micVolUp");
+      const systemVolumeSpan = document.getElementById("systemVolume");
+      const micVolumeSpan = document.getElementById("micVolume");
+      let isRecording = false;
+      let selectedSourceId = null;
+      let selectedOutputPath = null;
+      let screenSources = [];
+      let currentMaxWidth = 1920;
+      let currentMaxHeight = 1080;
+      let selectedWidth = 1920;
+      let selectedHeight = 1080;
+      let audioDevices = [];
+      let systemVolume = 100;
+      let micVolume = 100;
+
+      // çözünürlük presetlerini oluştur
+      function createResolutionPresets(maxWidth, maxHeight) {
+        const presets = [
+          { name: "Orijinal", width: maxWidth, height: maxHeight },
+          { name: "1080p", width: 1920, height: 1080 },
+          { name: "720p", width: 1280, height: 720 },
+          { name: "480p", width: 854, height: 480 },
+        ];
+
+        const presetsContainer = document.getElementById("resolutionPresets");
+        presetsContainer.innerHTML = "";
+
+        presets.forEach((preset) => {
+          const button = document.createElement("button");
+          button.className = "resolution-preset";
+
+          const presetInfo = document.createElement("div");
+          presetInfo.className = "preset-info";
+          presetInfo.innerHTML = `
+                    <div class="preset-name">${preset.name}</div>
+                    <div class="preset-resolution">${preset.width}x${preset.height}</div>
+                `;
+          button.appendChild(presetInfo);
+
+          if (preset.width > maxWidth || preset.height > maxHeight) {
+            button.classList.add("disabled");
+          }
+
+          button.addEventListener("click", () => {
+            if (!button.classList.contains("disabled")) {
+              document.querySelectorAll(".resolution-preset").forEach((btn) => {
+                btn.classList.remove("active");
+              });
+              button.classList.add("active");
+              selectedWidth = preset.width;
+              selectedHeight = preset.height;
+            }
+          });
+
+          presetsContainer.appendChild(button);
+        });
+      }
+
+      // ekranları yükle
+      async function loadSources() {
+        screenSources = await ipcRenderer.invoke("get-sources");
+        screenSelect.innerHTML = '<option value="">Ekran seçin...</option>';
+
+        screenSources.forEach((source) => {
+          const option = document.createElement("option");
+          option.value = source.id;
+          option.textContent = `${source.name} (${source.display.width}x${source.display.height})`;
+          screenSelect.appendChild(option);
+        });
+      }
+
+      // ekran boyut güncelle
+      function updateResolution(source) {
+        if (source) {
+          currentMaxWidth = source.display.width;
+          currentMaxHeight = source.display.height;
+          selectedWidth = currentMaxWidth;
+          selectedHeight = currentMaxHeight;
+          createResolutionPresets(currentMaxWidth, currentMaxHeight);
+          const originalPreset = document.querySelector(".resolution-preset");
+          if (originalPreset) {
+            originalPreset.click();
+          }
+        }
+      }
+
+      // kayıt buton durumunu güncelle
+      function updateRecordButton() {
+        recordButton.disabled = !selectedSourceId;
+      }
+
+      //ekran değiştiğinde
+      screenSelect.addEventListener("change", () => {
+        selectedSourceId = screenSelect.value;
+        const selectedSource = screenSources.find(
+          (s) => s.id === parseInt(selectedSourceId)
+        );
+        updateResolution(selectedSource);
+        updateRecordButton();
+      });
+
+      // kayıt konumu seçme
+      selectPathButton.addEventListener("click", async () => {
+        const result = await ipcRenderer.invoke("select-output-path");
+        if (result) {
+          selectedOutputPath = result;
+          outputPathInput.value = result;
+          updateRecordButton();
+        }
+      });
+
+      // ses cihazlarını yükle
+      async function loadAudioDevices() {
+        audioDevices = await ipcRenderer.invoke("get-audio-devices");
+        console.log("Yüklenen ses cihazları:", audioDevices);
+
+        const hasDefaultSystem = audioDevices.some(
+          (d) => d.type === "system" && d.isDefault
+        );
+        const hasDefaultMic = audioDevices.some(
+          (d) => d.type === "mic" && d.isDefault
+        );
+
+        console.log("Varsayılan sistem sesi:", hasDefaultSystem);
+        console.log("Varsayılan mikrofon:", hasDefaultMic);
+
+        recordSystemAudio.checked = hasDefaultSystem;
+        recordMic.checked = hasDefaultMic;
+      }
+
+      (async () => {
+        const defaultPath = await ipcRenderer.invoke("select-output-path");
+        selectedOutputPath = defaultPath;
+        outputPathInput.value = defaultPath;
+        updateRecordButton();
+      })();
+
+      function updateVolumeDisplays() {
+        systemVolumeSpan.textContent = systemVolume + "%";
+        micVolumeSpan.textContent = micVolume + "%";
+      }
+      systemVolDown.onclick = () => {
+        systemVolume = Math.max(0, systemVolume - 10);
+        updateVolumeDisplays();
+      };
+      systemVolUp.onclick = () => {
+        systemVolume = Math.min(200, systemVolume + 10);
+        updateVolumeDisplays();
+      };
+      micVolDown.onclick = () => {
+        micVolume = Math.max(0, micVolume - 10);
+        updateVolumeDisplays();
+      };
+      micVolUp.onclick = () => {
+        micVolume = Math.min(200, micVolume + 10);
+        updateVolumeDisplays();
+      };
+      updateVolumeDisplays();
+
+      function getSelectedAudioDevices() {
+        const devices = [];
+        if (recordSystemAudio.checked) {
+          devices.push({ id: "default", type: "system", volume: systemVolume });
+        }
+        if (recordMic.checked) {
+          devices.push({ id: "default", type: "mic", volume: micVolume });
+        }
+        return devices;
+      }
+
+      loadSources();
+      loadAudioDevices();
+
+      recordButton.addEventListener("click", () => {
+        if (!isRecording) {
+          const timestamp = Date.now();
+          const outputPath = selectedOutputPath.replace(
+            ".mp4",
+            `_${timestamp}.mp4`
+          );
+          const fps = parseInt(fpsInput.value, 10) || 30;
+          const crf = parseInt(crfInput.value, 10) || 23;
+          const selectedAudioDevices = getSelectedAudioDevices();
+
+          console.log("Kayıt başlatılıyor:", {
+            outputPath,
+            sourceId: selectedSourceId,
+            fps,
+            width: selectedWidth,
+            height: selectedHeight,
+            crf,
+            recordAudio: selectedAudioDevices.length > 0,
+            selectedAudioDevices,
+          });
+
+          ipcRenderer.send("start-recording", {
+            outputPath,
+            sourceId: selectedSourceId,
+            fps,
+            width: selectedWidth,
+            height: selectedHeight,
+            crf,
+            recordAudio: selectedAudioDevices.length > 0,
+            selectedAudioDevices,
+          });
+
+          recordButton.textContent = "Kaydı Durdur";
+          status.textContent = "Kayıt yapılıyor...";
+          status.className = "recording";
+          isRecording = true;
+        } else {
+          ipcRenderer.send("stop-recording");
+          recordButton.textContent = "Kayıt Başlat";
+          status.textContent = "Kayıt durduruldu";
+          status.className = "stopped";
+          isRecording = false;
+        }
+      });
+
+      // kayıt durduruldu
+      ipcRenderer.on("recording-stopped", () => {
+        recordButton.textContent = "Kayıt Başlat";
+        status.textContent = "Kayıt durduruldu";
+        status.className = "stopped";
+        isRecording = false;
+      });
+    </script>
+  </body>
+</html>

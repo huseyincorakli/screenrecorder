@@ -1,0 +1,29 @@
+{
+  "name": "screenrecorder",
+  "version": "1.0.0",
+  "description": "Ekran kaydedici",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron . --no-sandbox",
+    "build": "electron-builder"
+  },
+  "author": "Hüseyin Çoraklı",
+  "license": "MIT",
+  "homepage": "https://github.com/huseyincorakli/screenrecorder",
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1"
+  },
+  "build": {
+    "appId": "com.huseyincorakli.screenrecorder",
+    "productName": "ScreenRecorder",
+    "linux": {
+      "target": "deb",
+      "category": "Video",
+      "icon": "icons/icon.png",
+      "maintainer": "huseyincorakli46@gmail.com",
+      "synopsis": "Basit ekran kaydedici",
+      "description": "Ekran kaydetmek için basit bir uygulama"
+    }
+  }
+}
